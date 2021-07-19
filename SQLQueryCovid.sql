@@ -91,8 +91,8 @@ FROM PopVsVac
 
 --TEMP TABLE
 
-DROP TABLE if exists #PrecentagePopulationVaccinated
-CREATE TABLE #PrecentagePopulationVaccinated
+DROP TABLE if exists #PercentagePopulationVaccinated
+CREATE TABLE #PercentagePopulationVaccinated
 (
 Continent nvarchar(255),
 Location nvarchar(255),
@@ -102,7 +102,7 @@ New_vaccinations numeric,
 RollingPeopleVaccinated numeric )
 
 
-Insert into #PrecentagePopulationVaccinated
+Insert into #PercentagePopulationVaccinated
 
 SELECT d.continent,d.location,d.date,d.population,v.new_vaccinations,
  sum(convert(int,v.new_vaccinations)) over (partition by d.location order by d.location, d.date) as RollingPeopleVaccinated
@@ -115,11 +115,11 @@ where d.continent is not  null
 
 
 SELECT * ,(RollingPeopleVaccinated/population)*100
-FROM #PrecentagePopulationVaccinated
+FROM #PercentagePopulationVaccinated
 
 --Creating view to store data for later visualization
 
-Create view PrecentagePopulationVaccinated as
+Create view PercentagePopulationVaccinated as
 SELECT d.continent,d.location,d.date,d.population,v.new_vaccinations,
  sum(convert(int,v.new_vaccinations)) over (partition by d.location order by d.location, d.date) as RollingPeopleVaccinated
 
