@@ -53,7 +53,7 @@ where continent is not null
 GROUP BY continent
 order by TotalDeathCount DESC
 
--- Global Numbers
+-- Global Numbers ( New cases and Death percentage accross the world everyday)
 
 SELECT date, sum(new_cases) as total_cases, sum(cast(new_deaths as int)) as total_deaths,sum(cast(new_deaths as int))/sum(new_cases)*100 as death_percentage
 FROM dbo.covid_deaths
@@ -73,10 +73,22 @@ order by 1,2
 
 --Total Population Vs Vaccination
 
+SELECT d.continent,d.location,d.date,d.population,v.new_vaccinations,
+SUM(CONVERT(int,v.new_vaccinations)) over (partition by d.location order by d.location, d.date) as RollingPeopleVaccinated
+
+FROM dbo.covid_deaths as d
+Join dbo.covid_vaccinations as v
+  on d.date=v.date
+  and d.location=v.location
+where d.continent is not  null
+order by 2,3 
+
+
+-- Use CTE
 With PopVsVac (continent,location,date,population,new_vaccinations,RollingPeopleVaccinated)as
 (
 SELECT d.continent,d.location,d.date,d.population,v.new_vaccinations,
- sum(convert(int,v.new_vaccinations)) over (partition by d.location order by d.location, d.date) as RollingPeopleVaccinated
+SUM(CONVERT(int,v.new_vaccinations)) over (partition by d.location order by d.location, d.date) as RollingPeopleVaccinated
 
 FROM dbo.covid_deaths as d
 Join dbo.covid_vaccinations as v
