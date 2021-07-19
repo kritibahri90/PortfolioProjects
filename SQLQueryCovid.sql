@@ -132,4 +132,4 @@ where d.continent is not  null
 
 
 SELECT *
-FROM PrecentagePopulationVaccinated
+FROM PercentagePopulationVaccinated
